@@ -12,11 +12,13 @@ Secure-message is a secure web chat platform built with React using end-to-end e
 
 - Direct chat functionality
 - Sending text messages 
+- Register easily
 - Load earlier messages 
 - Message read receipt
 - Arbitrary message sizes
 - Copy and paste text messages 
 - Sign in with Email
+- Change password
 
 
 ## INSTALLATION
