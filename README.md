@@ -26,8 +26,9 @@ Secure-message is a secure web chat platform built with React using end-to-end e
 
 ## INSTALLATION
 
-You can install secure-message by using Docker. Just download the Docker Compose file to your computer and initiate the process.
-
+You can install secure-message by using Docker. 
+Just download the Docker Compose file to your computer and initiate the process.
+You can install by running install.sh or using command:
 ```
 docker-compose up -d
 ```
