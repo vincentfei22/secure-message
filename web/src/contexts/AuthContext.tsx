@@ -3,7 +3,7 @@ import {
   getUser,
   login as GQLLogin,
   logout as GQLLogout,
-} from "server/dist/client/auth";
+} from "gqlite-lib/dist/client/auth";
 import { createContext, useEffect, useReducer } from "react";
 
 const initialState = {
