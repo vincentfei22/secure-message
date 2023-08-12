@@ -2,12 +2,11 @@
 
 Secure-message is a secure web chat platform built with React using end-to-end encryption, command line injection prevention, and authentication technologies.
 
-https://github.com/vincentfei22/secure-message/blob/master/images/img1.jpg
+<img src="https://github.com/vincentfei22/secure-message/blob/master/images/img1.jpg" width="880">
 
-https://github.com/vincentfei22/secure-message/blob/master/images/img2.jpg
+<img src="https://github.com/vincentfei22/secure-message/blob/master/images/img2.jpg" width="880">
 
-https://github.com/vincentfei22/secure-message/blob/master/images/img3.jpg
-
+<img src="https://github.com/vincentfei22/secure-message/blob/master/images/img3.jpg" width="880">
 
 ## FEATURES
 
