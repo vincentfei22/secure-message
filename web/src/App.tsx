@@ -20,7 +20,7 @@ import { ThemeProvider } from "contexts/ThemeContext";
 import { UserProvider } from "contexts/UserContext";
 import { UsersProvider } from "contexts/UsersContext";
 import { getIdToken } from "server/dist/client/auth";
-import { setUrl } from "server/dist/client/utils";
+import { setUrl } from "gqlite-lib/dist/client/auth";
 import { createClient } from "graphql-ws";
 import { WorkspacesProvider } from "hooks/useWorkspaces";
 import { useEffect, useState } from "react";
