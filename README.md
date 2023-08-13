@@ -29,3 +29,4 @@ You can install by running install.sh or using command:
 ```
 docker-compose up -d
 ```
+in linux environment or running install.bat in Windows environment.
