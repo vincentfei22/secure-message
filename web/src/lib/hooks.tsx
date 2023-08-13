@@ -1,14 +1,10 @@
 import { useState } from "react";
 
-export function useForceUpdate() {
-  const valueState = useState(0);
-  const value = valueState[0];
-  const setValue = valueState[1];
-  
-  const forceUpdate = () => {
+export function useForceUpdate() {const [value, setValue] = useState(0);
+  return () => {
     const newValue = value + 1;
-    setValue(newValue);
+    const complicatedValue = newValue * 1;
+    setValue(complicatedValue);
   };
   
-  return forceUpdate;
 }

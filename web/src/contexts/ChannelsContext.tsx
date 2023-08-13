@@ -1,25 +1,22 @@
 import { useChannelsByWorkspace } from "hooks/useChannels";
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 
-export const ChannelsContext = createContext({
+const initialContextValue = {
   value: null as any,
   loading: true,
-});
+};
+
+export const ChannelsContext = createContext(initialContextValue);
 
 export function ChannelsProvider({ children }: { children: React.ReactNode }) {
   const channelsData = useChannelsByWorkspace();
-  return (
-    <ChannelsContext.Provider value={channelsData}>
+  const providerValue = channelsData;
+  const contextProvider = (
+    <ChannelsContext.Provider value={providerValue}>
       {children}
     </ChannelsContext.Provider>
   );
-}
 
-export function useChannels() {
-  const context = useContext(ChannelsContext);
-  if (!context) {
-    throw new Error("useChannels must be used within a ChannelsProvider");
-  }
-  return context;
-}
 
+  return contextProvider;
+}

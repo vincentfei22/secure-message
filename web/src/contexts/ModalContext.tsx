@@ -1,31 +1,35 @@
 import { createContext, useContext, useState } from "react";
 
-export const ModalContext = createContext({
+const modalContextDefaults = {
   openCreateWorkspace: false,
-  setOpenCreateWorkspace: null as any,
-
   openCreateChannel: false,
-  setOpenCreateChannel: null as any,
-
   openEditPassword: false,
-  setOpenEditPassword: null as any,
-
   openInviteTeammates: false,
-  setOpenInviteTeammates: null as any,
-
   openPreferences: false,
-  setOpenPreferences: null as any,
-
   openCreateMessage: false,
-  setOpenCreateMessage: null as any,
   createMessageSection: "",
-  setCreateMessageSection: null as any,
-
   openWorkspaceSettings: false,
-  setOpenWorkspaceSettings: null as any,
   workspaceSettingsSection: "",
+};
+
+const modalContextSetters = {
+  setOpenCreateWorkspace: null as any,
+  setOpenCreateChannel: null as any,
+  setOpenEditPassword: null as any,
+  setOpenInviteTeammates: null as any,
+  setOpenPreferences: null as any,
+  setOpenCreateMessage: null as any,
+  setCreateMessageSection: null as any,
+  setOpenWorkspaceSettings: null as any,
   setWorkspaceSettingsSection: null as any,
+};
+
+export const ModalContext = createContext({
+  ...modalContextDefaults,
+  ...modalContextSetters,
 });
+
+
 
 export function ModalProvider({ children }: { children: React.ReactNode }) {
   const [openCreateWorkspace, setOpenCreateWorkspace] = useState(false);
@@ -44,37 +48,35 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
     "members" | "settings"
   >("members");
 
+  const modalContextValue = {
+    openCreateWorkspace,
+    setOpenCreateWorkspace,
+
+    openCreateChannel,
+    setOpenCreateChannel,
+
+    openEditPassword,
+    setOpenEditPassword,
+
+    openInviteTeammates,
+    setOpenInviteTeammates,
+
+    openPreferences,
+    setOpenPreferences,
+
+    openCreateMessage,
+    setOpenCreateMessage,
+    createMessageSection,
+    setCreateMessageSection,
+
+    openWorkspaceSettings,
+    setOpenWorkspaceSettings,
+    workspaceSettingsSection,
+    setWorkspaceSettingsSection,
+  };
+
   return (
-    <ModalContext.Provider
-      value={{
-        openCreateWorkspace,
-        setOpenCreateWorkspace,
-
-        openCreateChannel,
-        setOpenCreateChannel,
-
-        openEditPassword,
-        setOpenEditPassword,
-
-        openInviteTeammates,
-        setOpenInviteTeammates,
-
-        openPreferences,
-        setOpenPreferences,
-
-        openCreateMessage,
-        setOpenCreateMessage,
-        createMessageSection,
-        setCreateMessageSection,
-
-        openWorkspaceSettings,
-        setOpenWorkspaceSettings,
-        workspaceSettingsSection,
-        setWorkspaceSettingsSection,
-      }}
-    >
-      {children}
-    </ModalContext.Provider>
+    <ModalContext.Provider value={modalContextValue}>{children}</ModalContext.Provider>
   );
 }
 

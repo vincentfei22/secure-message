@@ -10,7 +10,6 @@ const initialState = {
 const { createContext, useEffect, useReducer } = react;
 const { createUser, getUser, login: GQLLogin, logout: GQLLogout } = auth;
 
-
 const handlers = {
   INITIALIZE: function (state: any, action: any) {
     const { isAuthenticated, user } = action.payload;
@@ -24,31 +23,28 @@ const handlers = {
   LOGIN: function (state: any, action: any) {
     const { user } = action.payload;
 
-    return Object.assign({}, state, {
-      isAuthenticated: true,
-      user,
-    });
+    return updateState(state, true, user);
   },
   LOGOUT: function (state: any) {
-    return Object.assign({}, state, {
-      isAuthenticated: false,
-      user: null,
-    });
+    return updateState(state, false, null);
   },
   REGISTER: function (state: any, action: any) {
     const { user } = action.payload;
 
-    return Object.assign({}, state, {
-      isAuthenticated: true,
-      user,
-    });
+    return updateState(state, true, user);
   },
 };
 
+function updateState(state: any, isAuthenticated: boolean, user: any) {
+  return Object.assign({}, state, {
+    isAuthenticated,
+    user,
+  });
+}
 
 const reducer = (state: any, action: any) =>
   // @ts-ignore
-  handlers[action.type] ? handlers[action.type](state, action) : state;
+  handlers[action.type] ? handlersaction.type : state;
 
 const AuthContext = createContext({
   ...initialState,
@@ -57,7 +53,6 @@ const AuthContext = createContext({
   register: null as any,
 });
 
-
 export const AuthProvider = function (props: any) {
   const { children } = props;
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -65,23 +60,15 @@ export const AuthProvider = function (props: any) {
   useEffect(function () {
     const initialize = async function () {
       const user = await getUser();
-      if (user) {
-        dispatch({
-          type: "INITIALIZE",
-          payload: {
-            isAuthenticated: true,
-            user,
-          },
-        });
-      } else {
-        dispatch({
-          type: "INITIALIZE",
-          payload: {
-            isAuthenticated: false,
-            user: null,
-          },
-        });
-      }
+      const isAuthenticated = !!user;
+      const payload = {
+        isAuthenticated,
+        user,
+      };
+      dispatch({
+        type: "INITIALIZE",
+        payload,
+      });
     };
 
     initialize();
@@ -127,3 +114,5 @@ export const AuthProvider = function (props: any) {
 };
 
 export default AuthContext;
+
+

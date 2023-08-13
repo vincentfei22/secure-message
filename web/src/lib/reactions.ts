@@ -48,18 +48,19 @@ const thumbsyReaction = {
 };
 
 const nothingReaction = {
-    name: "I feel nothing",
-    value: null,
-    icon: XIcon,
-    iconColor: "text-gray-400",
-    bgColor: "bg-transparent"
-}
+  name: "I feel nothing",
+  value: null,
+  icon: XIcon,
+  iconColor: "text-gray-400",
+  bgColor: "bg-transparent",
+};
 
 export const reactions = [
-    excitedReaction, 
-    lovedReaction, 
-    happyReaction, 
-    sadReaction, 
-    thumbsyReaction, 
-    nothingReaction
+  excitedReaction,
+  lovedReaction,
+  happyReaction,
+  sadReaction,
+  thumbsyReaction,
+  nothingReaction,
 ];
+

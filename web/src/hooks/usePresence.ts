@@ -5,56 +5,53 @@ import useAuth from "hooks/useAuth";
 import { useEffect, useState } from "react";
 import timeDiff from "utils/time-diff";
 
-export function usePresenceByUserId(id?: string | null) {
-  const { user } = useAuth();
+export function usePresenceByUserId(id?: string | null) {const { user } = useAuth();
+const isMe = user?.uid === id;
 
-  const isMe = user?.uid === id;
+let currentTimeValue = Date.now();
+const [currentTime, setCurrentTime] = useState(currentTimeValue);
 
-  const [currentTime, setCurrentTime] = useState(Date.now());
-
-  useEffect(() => {
+useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(Date.now());
+        currentTimeValue = Date.now();
+        setCurrentTime(currentTimeValue);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+}, []);
 
-  const [currentPresence, setCurrentPresence] = useState<any>(null);
+let currentPresenceValue: any = null;
+const [currentPresence, setCurrentPresence] = useState<any>(currentPresenceValue);
 
-  const { data, loading } = useQuery(queries.GET_PRESENCE, {
-    variables: {
-      objectId: id,
-    },
+const presenceData = useQuery(queries.GET_PRESENCE, {
+    variables: { objectId: id },
     skip: !id,
-  });
-  const { data: dataPush } = useSubscription(subscriptions.PRESENCE, {
-    variables: {
-      objectId: id,
-    },
+});
+
+const presencePushData = useSubscription(subscriptions.PRESENCE, {
+    variables: { objectId: id },
     skip: !id,
-  });
+});
 
-  useEffect(() => {
-    if (data) setCurrentPresence(data.getPresence);
-  }, [data]);
+useEffect(() => {
+    if (presenceData.data) {
+        currentPresenceValue = presenceData.data.getPresence;
+        setCurrentPresence(currentPresenceValue);
+    }
+}, [presenceData.data]);
 
-  useEffect(() => {
-    if (dataPush) setCurrentPresence(dataPush.onUpdatePresence);
-  }, [dataPush]);
+useEffect(() => {
+    if (presencePushData.data) {
+        currentPresenceValue = presencePushData.data.onUpdatePresence;
+        setCurrentPresence(currentPresenceValue);
+    }
+}, [presencePushData.data]);
 
-  let isPresent = false;
-  
-  if (isMe) {
-    isPresent = true;
-  } else if (currentPresence?.lastPresence) {
-    const lastPresenceTime = new Date(currentPresence.lastPresence);
-    const timeDifference = timeDiff(lastPresenceTime, currentTime);
-    
-    isPresent = timeDifference < 35;
-  }
+let isPresent = false;
+if (isMe) isPresent = true;
+else if (currentPresence?.lastPresence)
+    isPresent =
+        timeDiff(new Date(currentPresence.lastPresence), currentTime) < 35;
 
-  return {
-    isPresent,
-    loading,
-  };
+return { isPresent, loading: presenceData.loading };
+
 }

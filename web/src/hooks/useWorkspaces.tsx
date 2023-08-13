@@ -9,24 +9,29 @@ export const WorkspacesContext = createContext({
   loading: true,
 });
 
-function compareDate(a: any, b: any) {
-  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+export function useMyWorkspaces() {const { user } = useUser();
+const { value, loading } = useContext(WorkspacesContext);
+
+let workspacesValue: any[] = [];
+if (value) {
+    for (let i = 0; i < value.length; i++) {
+        if (
+            value[i].isDeleted === false &&
+            value[i].members.includes(user?.uid)
+        ) {
+            workspacesValue.push(value[i]);
+        }
+    }
 }
 
-export function useMyWorkspaces() {
-  const { user } = useUser();
-  const { value, loading } = useContext(WorkspacesContext);
+workspacesValue.sort((a: any, b: any) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    return dateB - dateA;
+});
 
-  const filteredWorkspaces = value?.filter(
-    (w: any) => w.isDeleted === false && w.members.includes(user?.uid)
-  );
-  
-  const sortedWorkspaces = filteredWorkspaces?.sort(compareDate);
+return { value: workspacesValue, loading };
 
-  return {
-    value: sortedWorkspaces,
-    loading,
-  };
 }
 
 export function WorkspacesProvider({
@@ -35,51 +40,52 @@ export function WorkspacesProvider({
   children: React.ReactNode;
 }) {
   const { user } = useUser();
-  const [workspaces, setWorkspaces] = useState<any[]>([]);
+const [workspaces, setWorkspaces] = useState<any[]>([]);
 
-  const { data, loading } = useQuery(queries.LIST_WORKSPACES, {
-    skip: !user,
-    fetchPolicy: "cache-and-network",
-  });
-  const { data: dataPush } = useSubscription(subscriptions.WORKSPACE, {
-    skip: !user,
-  });
+const { data, loading } = useQuery(queries.LIST_WORKSPACES, {
+  skip: !user,
+  fetchPolicy: "cache-and-network",
+});
+const { data: dataPush } = useSubscription(subscriptions.WORKSPACE, {
+  skip: !user,
+});
 
-  useEffect(() => {
-    if (data) setWorkspaces(data.listWorkspaces);
-  }, [data]);
+useEffect(() => {
+  if (data) setWorkspaces(data.listWorkspaces);
+}, [data]);
 
-  useEffect(() => {
-    if (dataPush) {
-      setWorkspaces([
-        ...workspaces.filter(
-          (item) => item.objectId !== dataPush.onUpdateWorkspace.objectId
-        ),
-        dataPush.onUpdateWorkspace,
-      ]);
-    }
-  }, [dataPush]);
+useEffect(() => {
+  if (dataPush) {
+    const updatedWorkspaces = workspaces.filter(
+      (item) => item.objectId !== dataPush.onUpdateWorkspace.objectId
+    );
+    updatedWorkspaces.push(dataPush.onUpdateWorkspace);
+    setWorkspaces(updatedWorkspaces);
+  }
+}, [dataPush]);
 
-  const filteredWorkspaces = workspaces?.filter((w: any) => w.isDeleted === false);
+return (
+  <WorkspacesContext.Provider
+    value={{
+      value: workspaces?.filter((w: any) => w.isDeleted === false),
+      loading,
+    }}
+  >
+    {children}
+  </WorkspacesContext.Provider>
+);
 
-  return (
-    <WorkspacesContext.Provider
-      value={{
-        value: filteredWorkspaces,
-        loading,
-      }}
-    >
-      {children}
-    </WorkspacesContext.Provider>
-  );
 }
 
 export function useWorkspaceById(id: any) {
   const { value } = useContext(WorkspacesContext);
-  
-  const workspace = value?.find((p: any) => p.objectId === id);
-  
-  return {
-    value: workspace,
-  };
+let workspace;
+for (let i = 0; i < value.length; i++) {
+  if (value[i].objectId === id) {
+    workspace = value[i];
+    break;
+  }
+}
+return { value: workspace };
+
 }
