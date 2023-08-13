@@ -5,15 +5,38 @@ interface CancelButtonProps {
 }
 
 export default function CancelButton({ setOpen }: CancelButtonProps) {
-    const handleClick = () => setOpen(false);
+    // Breakdown the button type
+    const buttonTypeDefinition = "button";
 
+    // Define button class names individually
+    const buttonBackgroundColorClass = "th-bg-selbg";
+    const buttonTextColorClass = "th-color-for";
+    const buttonWidthClass = "w-full";
+    const buttonFlexProperties = "inline-flex justify-center";
+    const buttonPaddingProperties = "py-2 px-4";
+    const buttonTextProperties = "text-base font-bold";
+    const buttonShapeProperties = "rounded";
+    const buttonFocusProperties = "focus:outline-none focus:ring-0";
+    const buttonResponsiveProperties = "sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm";
+
+    // Combine all button class names
+    const combinedButtonClassNames = `${buttonBackgroundColorClass} ${buttonTextColorClass} ${buttonWidthClass} ${buttonFlexProperties} ${buttonPaddingProperties} ${buttonTextProperties} ${buttonShapeProperties} ${buttonFocusProperties} ${buttonResponsiveProperties}`;
+
+    // Define button text
+    const buttonTextContent = "Cancel";
+
+    // Handle click function breakdown
+    const closeStateValue = false;
+    const handleClick = () => setOpen(closeStateValue);
+
+    // Render the button
     return (
         <button
-            type="button"
-            className="th-bg-selbg th-color-for w-full inline-flex justify-center py-2 px-4 text-base font-bold rounded focus:outline-none focus:ring-0 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            type={buttonTypeDefinition}
+            className={combinedButtonClassNames}
             onClick={handleClick}
         >
-            Cancel
+            {buttonTextContent}
         </button>
     );
 }

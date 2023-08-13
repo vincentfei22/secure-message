@@ -19,12 +19,24 @@ export default function ConfirmationModal({
     open,
     setOpen,
 }: ConfirmationModalProps) {
-    const [loading, setLoading] = useState(false);
+    // State for loading
+    const initialLoadingState = false;
+    const [loadingState, setLoadingState] = useState(initialLoadingState);
 
-    const handleConfirm = async () => {
-        setLoading(true);
+    // Define modal properties
+    const modalOverlayColorClass = "fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity";
+    const modalContentWrapperClass = "th-bg-bg inline-block align-bottom rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full";
+    const modalHeaderClass = "th-bg-bg p-6 pb-4 flex justify-between items-center";
+    const modalTitleClass = "font-bold text-2xl th-color-for";
+    const closeButtonClass = "cursor-pointer focus:outline-none";
+    const modalBodyClass = "p-6 pt-0 pb-4 th-color-for th-bg-bg";
+    const modalFooterClass = "px-4 pb-5 pt-1 sm:px-6 sm:flex sm:flex-row-reverse";
+
+    // Handle confirm action breakdown
+    const handleConfirmationAction = async () => {
+        setLoadingState(true);
         await onConfirm();
-        setLoading(false);
+        setLoadingState(false);
     };
 
     return (
@@ -46,7 +58,7 @@ export default function ConfirmationModal({
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <Dialog.Overlay className="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity" />
+                        <Dialog.Overlay className={modalOverlayColorClass} />
                     </Transition.Child>
 
                     <span
@@ -64,24 +76,24 @@ export default function ConfirmationModal({
                         leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                         leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                     >
-                        <div className="th-bg-bg inline-block align-bottom rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div className="th-bg-bg p-6 pb-4 flex justify-between items-center">
-                                <h5 className="font-bold text-2xl th-color-for">{title}</h5>
+                        <div className={modalContentWrapperClass}>
+                            <div className={modalHeaderClass}>
+                                <h5 className={modalTitleClass}>{title}</h5>
                                 <div
                                     role="button"
                                     tabIndex={0}
-                                    className="cursor-pointer focus:outline-none"
+                                    className={closeButtonClass}
                                     onClick={() => setOpen(false)}
                                 >
                                     <XIcon className="h-5 w-5 th-color-for" />
                                 </div>
                             </div>
-                            <div className="p-6 pt-0 pb-4 th-color-for th-bg-bg">{text}</div>
-                            <div className="px-4 pb-5 pt-1 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <div className={modalBodyClass}>{text}</div>
+                            <div className={modalFooterClass}>
                                 <ModalButton
                                     text="Confirm"
-                                    onClick={handleConfirm}
-                                    isSubmitting={loading}
+                                    onClick={handleConfirmationAction}
+                                    isSubmitting={loadingState}
                                 />
                                 <CancelButton setOpen={setOpen} />
                             </div>

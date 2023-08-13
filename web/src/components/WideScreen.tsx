@@ -11,22 +11,28 @@ interface WindowSize {
 }
 
 const useWindowSize = (): WindowSize => {
-    const [windowSize, setWindowSize] = useState<WindowSize>({
+    // Initial state for window size
+    const initialState: WindowSize = {
         width: undefined,
         height: undefined,
-    });
+    };
+
+    const [windowSize, setWindowSize] = useState<WindowSize>(initialState);
 
     useEffect(() => {
+        // Handle window resize
         const handleResize = () => {
-            setWindowSize({
+            const newSize: WindowSize = {
                 width: window.innerWidth,
                 height: window.innerHeight,
-            });
+            };
+            setWindowSize(newSize);
         };
 
         window.addEventListener("resize", handleResize);
         handleResize();
 
+        // Cleanup
         return () => {
             window.removeEventListener("resize", handleResize);
         };
@@ -36,11 +42,19 @@ const useWindowSize = (): WindowSize => {
 };
 
 const SmallScreen: React.FC<SmallScreenProps> = ({ children }) => {
+    // Get window size
     const size = useWindowSize();
 
+    // Return null if size is not defined
     if (!size) return null;
 
-    if (size.width! < 770) {
+    // Check for small screen
+    const isSmallScreen = size.width! < 770;
+
+    if (isSmallScreen) {
+        const logoSrc = `${process.env.PUBLIC_URL}/logo.png`;
+        const logoAlt = "Logo";
+
         return (
             <div className="h-screen w-screen items-center justify-center flex">
                 <main className="flex-grow flex flex-col justify-center max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
@@ -49,8 +63,8 @@ const SmallScreen: React.FC<SmallScreenProps> = ({ children }) => {
                             <span className="sr-only">{APP_NAME}</span>
                             <img
                                 className="h-16 w-auto rounded"
-                                src={`${process.env.PUBLIC_URL}/logo.png`}
-                                alt="Logo"
+                                src={logoSrc}
+                                alt={logoAlt}
                             />
                         </a>
                     </div>

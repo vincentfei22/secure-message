@@ -18,7 +18,6 @@ import bytesToSize from "utils/bytesToSize";
 import classNames from "utils/classNames";
 import { getHref } from "utils/get-file-url";
 import hexToRgbA from "utils/hexToRgbA";
-import CryptoJS from 'crypto-js';
 
 const MessageDiv = styled.div`
   :hover {
@@ -447,25 +446,3 @@ export default function Message({
     </div>
   );
 }
-
-interface MessageProps {
-  message: {
-    text: string;
-  };
-}
-
-const DecryptedMessage = ({ message }: MessageProps) => {
-  // The shared secret key. In a real application, this should be generated and exchanged securely.
-  const secretKey = 'your-secret-key';
-
-  // Decrypt the message text with the secret key.
-  const bytes = CryptoJS.AES.decrypt(message.text, secretKey);
-  const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
-
-  return (
-    <div className="message">
-      <div className="message-text">{decryptedText}</div>
-      {/* Render the rest of the message properties... */}
-    </div>
-  );
-};

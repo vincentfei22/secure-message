@@ -197,22 +197,30 @@ function Channel({ name, objectId }: { name: string; objectId: string }) {
     const { value: channel } = useChannelById(objectId);
     const { value: detail } = useDetailByChat(objectId);
     const { user } = useUser();
-    const notifications = channel
-        ? channel.lastMessageCounter - (detail?.lastRead || 0)
-        : 0;
-
+    
+    const notifications = channel ? channel.lastMessageCounter - (detail?.lastRead || 0) : 0;
     const selected = channelId === objectId;
-
     const typingArray = channel?.typing?.filter((typ: any) => typ !== user?.uid);
-
-    const handleNavigation = () =>
-        navigate(`/dashboard/workspaces/${workspaceId}/channels/${objectId}`);
-
+    
+    const handleNavigation = () => navigate(`/dashboard/workspaces/${workspaceId}/channels/${objectId}`);
+    
+    const NotificationBubble = ({ children }: { children: React.ReactNode }) => (
+        <div
+            style={{ paddingTop: "2px", paddingBottom: "2px" }}
+            className="rounded flex items-center justify-center px-2 th-color-brwhite th-bg-red font-semibold text-xs"
+        >
+            {children}
+        </div>
+    );
+    
     return (
         <div
             role="button"
             tabIndex={0}
-            className="flex items-center justify-between pl-8 pr-3 py-1 cursor-pointer focus:outline-none"
+            className={classNames(
+                "flex items-center justify-between pl-8 pr-3 py-1 cursor-pointer focus:outline-none",
+                selected && "bg-blue-600"
+            )}
             onClick={handleNavigation}
             style={{
                 backgroundColor: selected ? themeColors?.blue : "transparent",
@@ -220,121 +228,111 @@ function Channel({ name, objectId }: { name: string; objectId: string }) {
         >
             <div className="flex items-center">
                 <HashtagIcon
-                    className={classNames(
-                        "h-4 w-4 mr-3",
-                        selected ? "th-color-brwhite" : "th-color-for"
-                    )}
+                    className={classNames("h-4 w-4 mr-3", {
+                        "th-color-brwhite": selected,
+                        "th-color-for": !selected,
+                    })}
                 />
                 <h5
                     className={classNames(
+                        "truncate w-36",
                         notifications ? "font-semibold" : "",
-                        "truncate w-36"
+                        {
+                            "text-white": selected,
+                            "text-gray-800": !selected,
+                        }
                     )}
-                    style={{
-                        color: selected
-                            ? themeColors?.brightWhite
-                            : themeColors?.foreground,
-                    }}
                 >
                     {name.replace("#", "")}
                 </h5>
             </div>
             {notifications > 0 && !typingArray?.length && (
-                <div
-                    style={{ paddingTop: "2px", paddingBottom: "2px" }}
-                    className="rounded flex items-center justify-center px-2 th-color-brwhite th-bg-red font-semibold text-xs"
-                >
-                    {notifications}
-                </div>
+                <NotificationBubble>{notifications}</NotificationBubble>
             )}
-            {notifications > 0 && typingArray?.length > 0 && (
-                <div
-                    style={{ paddingTop: "2px", paddingBottom: "2px" }}
-                    className="rounded flex items-center justify-center px-1 th-color-brwhite th-bg-red font-semibold text-xs"
-                >
+            {typingArray?.length > 0 && (
+                <NotificationBubble>
                     <DotsHorizontalIcon className="h-4 w-4 animate-bounce" />
-                </div>
-            )}
-            {typingArray?.length > 0 && !notifications && (
-                <div
-                    style={{ paddingTop: "2px", paddingBottom: "2px" }}
-                    className="rounded flex items-center justify-center px-2 th-color-brwhite font-semibold text-xs"
-                >
-                    <DotsHorizontalIcon className="h-4 w-4 animate-bounce" />
-                </div>
+                </NotificationBubble>
             )}
         </div>
     );
+    
 }
 
 function AddChannels() {
-    const { setOpenCreateMessage: setOpen, setCreateMessageSection: setSection } =
-        useModal();
+    const { setOpenCreateMessage: setOpen, setCreateMessageSection: setSection } = useModal();
 
-    const handleClick = () => {
-        setOpen(true);
-        setSection("channels");
-    };
+/**
+ * Handles the click event to open the modal and set its section to "channels".
+ */
+const handleClick = () => {
+    setOpen(true);
+    setSection("channels");
+};
 
-    return (
-        <div
-            role="button"
-            tabIndex={0}
-            className="flex items-center px-8 cursor-pointer focus:outline-none pt-2"
-            onClick={handleClick}
-        >
-            <div className="flex items-center justify-center rounded p-1 mr-2 th-bg-blue">
-                <PlusIcon className="h-3 w-3 th-color-brwhite" />
-            </div>
-            <h5 className="th-color-for">Add channels</h5>
+/**
+ * Handles the key press event to allow interaction via keyboard.
+ * @param event The keyboard event object.
+ */
+const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+        handleClick();
+    }
+};
+
+return (
+    <div
+        role="button"
+        tabIndex={0}
+        className="flex items-center px-8 cursor-pointer focus:outline-none pt-2"
+        onClick={handleClick}
+        onKeyPress={handleKeyPress} // added for keyboard accessibility
+    >
+        <div className="flex items-center justify-center rounded p-1 mr-2 th-bg-blue">
+            <PlusIcon className="h-3 w-3 th-color-brwhite" />
         </div>
-    );
+        <h5 className="th-color-for">Add channels</h5>
+    </div>
+);
+
 }
 
 export default function Channels() {
     const { themeColors } = useTheme();
-    const { value } = useChannels();
+const { value } = useChannels();
 
-    return (
-        <div>
-            <Disclosure defaultOpen>
-                {({ open }) => (
-                    <>
-                        <Disclosure.Button className="flex justify-between items-center px-4 cursor-pointer">
-                            <div className="flex items-center">
-                                <ArrowIcon
-                                    className={`h-4 w-4 mr-2 ${open ? "transform rotate-90" : ""
-                                        }`}
-                                    style={{
-                                        color: themeColors?.foreground,
-                                    }}
-                                />
-                                <h5
-                                    style={{
-                                        color: themeColors?.foreground,
-                                    }}
-                                >
-                                    Channels
-                                </h5>
-                            </div>
-                        </Disclosure.Button>
-                        <Disclosure.Panel
-                            style={{ color: themeColors?.foreground }}
-                            className="pt-3 pb-2 text-sm space-y-1"
-                        >
-                            {value?.map((doc: any) => (
-                                <Channel
-                                    key={doc.objectId}
-                                    objectId={doc.objectId}
-                                    name={doc.name}
-                                />
-                            ))}
-                            <AddChannels />
-                        </Disclosure.Panel>
-                    </>
-                )}
-            </Disclosure>
-            <CreateChannel />
-        </div>
-    );
+const DisclosureButtonContent = ({ open }: { open: boolean }) => (
+    <div className="flex items-center">
+        <ArrowIcon
+            className={`h-4 w-4 mr-2 transform ${open ? "rotate-90" : ""}`}
+            style={{ color: themeColors?.foreground }}
+        />
+        <h5 style={{ color: themeColors?.foreground }}>Channels</h5>
+    </div>
+);
+
+return (
+    <div>
+        <Disclosure defaultOpen>
+            {({ open }) => (
+                <>
+                    <Disclosure.Button className="flex justify-between items-center px-4 cursor-pointer">
+                        <DisclosureButtonContent open={open} />
+                    </Disclosure.Button>
+                    <Disclosure.Panel
+                        style={{ color: themeColors?.foreground }}
+                        className="pt-3 pb-2 text-sm space-y-1"
+                    >
+                        {value?.map((doc: any) => (
+                            <Channel key={doc.objectId} objectId={doc.objectId} name={doc.name} />
+                        ))}
+                        <AddChannels />
+                    </Disclosure.Panel>
+                </>
+            )}
+        </Disclosure>
+        <CreateChannel />
+    </div>
+);
+
 }

@@ -23,52 +23,65 @@ export default function EditProfile({
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const { userdata } = useUser();
-    const userPhotoURL = getHref(userdata?.photoURL);
 
-    const [photo, setPhoto] = useState<File | null | undefined>(null);
-    const [photoUrl, setPhotoUrl] = useState("");
-    const fileRef = useRef<any>(null);
+const userPhotoURL = getHref(userdata?.photoURL);
+const fileRef = useRef<any>(null);
 
-    useEffect(() => {
-        if (photo) setPhotoUrl(URL.createObjectURL(photo));
-        else setPhotoUrl("");
-    }, [photo]);
+const [photo, setPhoto] = useState<File | null | undefined>(null);
+const [photoUrl, setPhotoUrl] = useState("");
 
-    useEffect(() => {
-        if (open) {
-            setPhoto(null);
-            setPhotoUrl("");
-        }
-    }, [open]);
+const resetPhoto = () => {
+    setPhoto(null);
+    setPhotoUrl("");
+};
 
-    const handleSavePicture = async () => {
-        try {
-            const path = await uploadFile(
-                "messenger",
-                `User/${userdata.objectId}/${now()}_photo`,
-                photo!
-            );
-            return path;
-        } catch (err: any) {
-            console.error(err);
-            return "";
-        }
-    };
+const updatePhotoUrlBasedOnPhoto = () => {
+    if (photo) {
+        setPhotoUrl(URL.createObjectURL(photo));
+    } else {
+        resetPhoto();
+    }
+};
 
-    const handleDeletePicture = async () => {
-        try {
-            await postData(`/users/${userdata?.objectId}`, {
-                photoPath: "",
-            });
-            setPhoto(null);
-            setPhotoUrl("");
-        } catch (err: any) {
-            console.error(err);
-        }
-    };
+useEffect(updatePhotoUrlBasedOnPhoto, [photo]);
 
-    return (
-        <div></div>
-    );
+useEffect(() => {
+    if (open) {
+        resetPhoto();
+    }
+}, [open]);
+
+const handleUploadError = (err: any) => {
+    console.error(err);
+    return "";
+};
+
+const handleSavePicture = async () => {
+    try {
+        const path = await uploadFile(
+            "messenger",
+            `User/${userdata.objectId}/${now()}_photo`,
+            photo!
+        );
+        return path;
+    } catch (err) {
+        handleUploadError(err);
+    }
+};
+
+const handleDeletePicture = async () => {
+    try {
+        await postData(`/users/${userdata?.objectId}`, {
+            photoPath: "",
+        });
+        resetPhoto();
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+return (
+    <div></div>
+);
 
 }

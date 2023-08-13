@@ -24,40 +24,50 @@ function EditMessageFooter({
     editorRef: any;
 }) {
     const { themeColors } = useTheme();
-    const editor = editorRef?.current?.getEditor();
-    const realText = editor?.getText() as string | null | undefined;
-    const isText = realText?.trim();
 
-    const submitButtonStyle = {
-        backgroundColor:
-            errors.text && isText ? themeColors?.red : themeColors?.blue,
-    };
+const editor = editorRef?.current?.getEditor();
+const realText = editor?.getText() as string | null | undefined;
+const isText = realText?.trim();
 
-    const errorSpan = errors.text && isText ? (
-        <span className="th-color-brwhite">{MESSAGE_MAX_CHARACTERS - isText.length}</span>
-    ) : (
-        "Save"
-    );
+const hasTextError = errors.text && isText;
 
-    return (
-        <div className="flex items-center space-x-2 mt-1">
-            <button
-                type="button"
-                className="border border-gray-500 font-medium th-bg-brwhite text-sm px-2 py-px rounded"
-                onClick={() => setEdit(false)}
-            >
-                Cancel
-            </button>
-            <button
-                className="border border-gray-500 font-medium flex items-center text-sm th-color-brwhite px-3 py-px rounded disabled:opacity-50"
-                disabled={isSubmitting || !isText || !dirty}
-                style={submitButtonStyle}
-            >
-                {isSubmitting && <Spinner className="th-color-brwhite mr-2 h-3 w-3" />}
-                {!isSubmitting && errorSpan}
-            </button>
-        </div>
-    );
+function getSubmitButtonBackgroundColor() {
+    if (hasTextError) {
+        return themeColors?.red;
+    }
+    return themeColors?.blue;
+}
+
+function getErrorSpan() {
+    if (hasTextError) {
+        return <span className="th-color-brwhite">{MESSAGE_MAX_CHARACTERS - isText.length}</span>;
+    }
+    return "Save";
+}
+
+const submitButtonStyle = {
+    backgroundColor: getSubmitButtonBackgroundColor(),
+};
+
+return (
+    <div className="flex items-center space-x-2 mt-1">
+        <button
+            type="button"
+            className="border border-gray-500 font-medium th-bg-brwhite text-sm px-2 py-px rounded"
+            onClick={() => setEdit(false)}
+        >
+            Cancel
+        </button>
+        <button
+            className="border border-gray-500 font-medium flex items-center text-sm th-color-brwhite px-3 py-px rounded disabled:opacity-50"
+            disabled={isSubmitting || !isText || !dirty}
+            style={submitButtonStyle}
+        >
+            {isSubmitting ? <Spinner className="th-color-brwhite mr-2 h-3 w-3" /> : getErrorSpan()}
+        </button>
+    </div>
+);
+
 }
 
 export default function EditMessage({

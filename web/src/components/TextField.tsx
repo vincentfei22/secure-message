@@ -27,18 +27,27 @@ const TextField: React.FC<TextFieldProps> = ({
     focus = false,
     disabled = false,
 }) => {
+    // Define input reference
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // Handle the focus effect
     useEffect(() => {
-        if (focus && inputRef.current) {
+        const isFocusEnabled = focus;
+        if (isFocusEnabled && inputRef.current) {
             inputRef.current.focus();
         }
     }, [focus]);
 
+    // Define classNames for input
+    const inputBaseClass = "th-bg-bg th-border-brblack th-color-for th-border- mt-2 focus:ring-indigo-400 focus:border-indigo-500 block w-full shadow-sm text-base rounded disabled:opacity-50";
+    const inputLabelClass = "block text-sm font-bold th-color-for";
+    const infoTextClass = "text-xs font-normal mt-2 th-color-for";
+
+    // Render the TextField component
     return (
         <div className="w-full">
             {label && (
-                <label htmlFor={name} className="block text-sm font-bold th-color-for">
+                <label htmlFor={name} className={inputLabelClass}>
                     {label}
                 </label>
             )}
@@ -53,9 +62,9 @@ const TextField: React.FC<TextFieldProps> = ({
                 onChange={handleChange}
                 ref={inputRef}
                 disabled={disabled}
-                className="th-bg-bg th-border-brblack th-color-for th-border- mt-2 focus:ring-indigo-400 focus:border-indigo-500 block w-full shadow-sm text-base rounded disabled:opacity-50"
+                className={inputBaseClass}
             />
-            {infos && <div className="text-xs font-normal mt-2 th-color-for">{infos}</div>}
+            {infos && <div className={infoTextClass}>{infos}</div>}
         </div>
     );
 };

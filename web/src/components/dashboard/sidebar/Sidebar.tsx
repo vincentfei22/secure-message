@@ -19,20 +19,30 @@ interface WorkspaceDropdownItemProps {
 }
 
 function WorkspaceDropdownItem({ setOpen, text }: WorkspaceDropdownItemProps) {
+    const handleItemClick = () => {
+        setOpen(true);
+    };
+    
     return (
         <Menu.Item>
-            {({ active }) => (
-                <div
-                    role="button"
-                    tabIndex={0}
-                    className={classNames(active ? "th-bg-blue th-color-brwhite" : "th-bg-bg th-color-for", "block px-5 py-1 text-sm cursor-pointer focus:outline-none")}
-                    onClick={() => setOpen(true)}
-                >
-                    {text}
-                </div>
-            )}
+            {({ active }) => {
+                const bgColorClass = active ? "th-bg-blue" : "th-bg-bg";
+                const textColorClass = active ? "th-color-brwhite" : "th-color-for";
+    
+                return (
+                    <div
+                        role="button"
+                        tabIndex={0}
+                        className={classNames(bgColorClass, textColorClass, "block px-5 py-1 text-sm cursor-pointer focus:outline-none")}
+                        onClick={handleItemClick}
+                    >
+                        {text}
+                    </div>
+                );
+            }}
         </Menu.Item>
     );
+    
 }
 
 interface WorkspaceDropdownProps {

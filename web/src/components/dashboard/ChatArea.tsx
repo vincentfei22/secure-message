@@ -57,40 +57,37 @@ function HeaderChannel() {
 
 function HeaderDirectMessage() {
     const navigate = useNavigate();
-    const location = useLocation();
-    const { themeColors } = useTheme();
-    const { dmId } = useParams();
-    const { value: dm } = useDirectMessageById(dmId);
-    const { user } = useUser();
-    const otherUserId = dm?.members.find((m: string) => m !== user?.uid);
-    const { value } = useUserById(otherUserId || user?.uid);
+const location = useLocation();
+const { themeColors } = useTheme();
+const { dmId } = useParams();
+const { value: dm } = useDirectMessageById(dmId);
+const { user } = useUser();
+const otherUserId = dm?.members.find((m: string) => m !== user?.uid);
+const { value: otherUser } = useUserById(otherUserId || user?.uid);
 
-    const photoURL = getHref(value?.thumbnailURL) || getHref(value?.photoURL);
+const navigateToUserProfile = () => {
+    const newPath = `${location.pathname.split("/user_profile")[0]}/user_profile/${otherUser?.objectId}`;
+    navigate(newPath);
+};
 
-    return (
-        <div className="w-full border-b flex items-center justify-between px-5 py-1 h-14 th-color-selbg th-border-selbg">
-            <SelectChannel
-                className="flex items-center cursor-pointer focus:outline-none py-1 px-2 rounded"
-                onClick={() =>
-                    navigate(
-                        `${location.pathname.split("/user_profile")[0]}/user_profile/${value?.objectId
-                        }`
-                    )
-                }
-                theme={themeColors}
-            >
-                <img
-                    alt={value?.objectId}
-                    className="h-6 w-6 rounded mr-2"
-                    src={photoURL || `${process.env.PUBLIC_URL}/blank_user.png`}
-                />
-                <div className="font-bold text-lg mr-1 th-color-for max-w-sm truncate">
-                    {value?.displayName}
-                </div>
-                <ChevronDownIcon className="h-4 w-4 th-color-for" />
-            </SelectChannel>
-        </div>
-    );
+const photoURL = getHref(otherUser?.thumbnailURL) || getHref(otherUser?.photoURL) || `${process.env.PUBLIC_URL}/blank_user.png`;
+
+return (
+    <div className="w-full border-b flex items-center justify-between px-5 py-1 h-14 th-color-selbg th-border-selbg">
+        <SelectChannel
+            className="flex items-center cursor-pointer focus:outline-none py-1 px-2 rounded"
+            onClick={navigateToUserProfile}
+            theme={themeColors}
+        >
+            <img alt={otherUser?.objectId} className="h-6 w-6 rounded mr-2" src={photoURL} />
+            <div className="font-bold text-lg mr-1 th-color-for max-w-sm truncate">
+                {otherUser?.displayName}
+            </div>
+            <ChevronDownIcon className="h-4 w-4 th-color-for" />
+        </SelectChannel>
+    </div>
+);
+
 }
 
 export default function ChatArea() {

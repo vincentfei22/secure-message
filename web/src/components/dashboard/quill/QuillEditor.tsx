@@ -105,11 +105,11 @@ function StickersDropdown() {
             (_, index) => `sticker${index + 1 < 10 ? `0${index + 1}` : index + 1}.png`
         );
     }, []);
-
+    
     const { workspaceId, channelId, dmId } = useParams();
-
+    
     const [loading, setLoading] = useState("");
-
+    
     const sendSticker = async (sticker: string) => {
         setLoading(sticker);
         try {
@@ -124,46 +124,40 @@ function StickersDropdown() {
         }
         setLoading("");
     };
-
+    
+    const Sticker = ({ sticker }: { sticker: string }) => (
+        <div
+            role="button"
+            tabIndex={0}
+            key={sticker}
+            className="flex items-center justify-center focus:outline-none relative"
+            onClick={() => sendSticker(sticker)}
+        >
+            <img
+                alt={sticker}
+                className="h-full w-full rounded-sm cursor-pointer"
+                src={`${process.env.PUBLIC_URL}/stickers/${sticker}`}
+            />
+            {loading === sticker && (
+                <div className="w-full h-full z-20 opacity-50 bg-white absolute inset-0 flex items-center justify-center">
+                    <Spinner className="text-gray-700" />
+                </div>
+            )}
+        </div>
+    );
+    
     return (
         <Popover as="div" className="z-10 relative">
             {({ open }) => (
                 <>
-                    <Popover.Button
-                        as="button"
-                        className="flex items-center focus:outline-none"
-                    >
+                    <Popover.Button as="button" className="flex items-center focus:outline-none">
                         <PhotographIcon className="h-5 w-5 th-color-for" />
                     </Popover.Button>
-
+    
                     {open && (
                         <div>
-                            <Popover.Panel
-                                static
-                                className="th-bg-bg th-border-selbg origin-top-left max-h-96 overflow-y-scroll w-72 absolute bottom-0 right-0 shadow border rounded py-2 px-2 grid grid-cols-3 gap-1"
-                            >
-                                {stickers.map((sticker) => (
-                                    <div
-                                        role="button"
-                                        tabIndex={0}
-                                        key={sticker}
-                                        className="flex items-center justify-center focus:outline-none relative"
-                                        onClick={() => sendSticker(sticker)}
-                                    >
-                                        <img
-                                            alt={sticker}
-                                            className={classNames(
-                                                "h-full w-full rounded-sm cursor-pointer"
-                                            )}
-                                            src={`${process.env.PUBLIC_URL}/stickers/${sticker}`}
-                                        />
-                                        {loading === sticker && (
-                                            <div className="w-full h-full z-20 opacity-50 bg-white absolute inset-0 flex items-center justify-center">
-                                                <Spinner className="text-gray-700" />
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
+                            <Popover.Panel static className="th-bg-bg th-border-selbg origin-top-left max-h-96 overflow-y-scroll w-72 absolute bottom-0 right-0 shadow border rounded py-2 px-2 grid grid-cols-3 gap-1">
+                                {stickers.map(sticker => <Sticker key={sticker} sticker={sticker} />)}
                             </Popover.Panel>
                         </div>
                     )}
@@ -171,6 +165,7 @@ function StickersDropdown() {
             )}
         </Popover>
     );
+    
 }
 
 function CustomToolbar({
@@ -339,32 +334,31 @@ function FileViewer({
     files: File[];
     setFiles: React.Dispatch<React.SetStateAction<File[]>>;
 }) {
-    const filesViewer = useMemo(
-        () => (
-            <div
-                className={classNames(
-                    files?.length ? "" : "hidden",
-                    "w-full h-24 px-3 flex py-2"
-                )}
-            >
-                {files?.length &&
-                    Array.from(files).map((file) => (
-                        <FileThumbnail file={file} key={file.lastModified}>
-                            <div className="absolute top-0 right-0 bg-gray-700 p-1 rounded-full transform translate-x-1 -translate-y-1 opacity-0 group-hover:opacity-100">
-                                <XIcon
-                                    className="text-white h-3 w-3 cursor-pointer"
-                                    onClick={() => {
-                                        setFiles([]);
-                                    }}
-                                />
-                            </div>
-                        </FileThumbnail>
-                    ))}
-            </div>
-        ),
-        [files]
+    const removeFiles = () => {
+        setFiles([]);
+    };
+    
+    const renderFileThumbnails = () => {
+        if (!files?.length) return null;
+    
+        return Array.from(files).map((file) => (
+            <FileThumbnail file={file} key={file.lastModified}>
+                <div className="absolute top-0 right-0 bg-gray-700 p-1 rounded-full transform translate-x-1 -translate-y-1 opacity-0 group-hover:opacity-100">
+                    <XIcon
+                        className="text-white h-3 w-3 cursor-pointer"
+                        onClick={removeFiles}
+                    />
+                </div>
+            </FileThumbnail>
+        ));
+    };
+    
+    return (
+        <div className={classNames(files?.length ? "" : "hidden", "w-full h-24 px-3 flex py-2")}>
+            {renderFileThumbnails()}
+        </div>
     );
-    return filesViewer;
+    
 }
 
 const handleTyping = debounce((setIsTyping) => {

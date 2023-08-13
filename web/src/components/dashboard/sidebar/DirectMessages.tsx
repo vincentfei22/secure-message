@@ -113,26 +113,41 @@ function AddTeammates() {
 
 export default function DirectMessages() {
     const { themeColors } = useTheme();
-    const { value } = useContext(DirectMessagesContext);
-    return (
-        <div>
-            <Disclosure defaultOpen>
-                {({ open }) => (
-                    <>
-                        <Disclosure.Button className="flex justify-between items-center px-4 cursor-pointer">
-                            <div className="flex items-center">
-                                <img src={ArrowIcon} alt="arrow" className={classNames(open ? "transform rotate-90" : "", "h-4 w-4 mr-2")} style={{ color: themeColors?.foreground }} />
-                                <h5 className="th-color-for">Direct messages</h5>
-                            </div>
-                        </Disclosure.Button>
-                        <Disclosure.Panel className="pt-3 pb-2 text-sm space-y-1">
-                            {value?.map((doc: any) => <DirectMessage key={doc.objectId} dm={doc} />)}
-                            <AddTeammates />
-                        </Disclosure.Panel>
-                    </>
-                )}
-            </Disclosure>
-            <AddTeammatesModal />
+const { value } = useContext(DirectMessagesContext);
+
+const DisclosureButton = ({ open }: { open: boolean }) => (
+    <Disclosure.Button className="flex justify-between items-center px-4 cursor-pointer">
+        <div className="flex items-center">
+            <img 
+                src={ArrowIcon} 
+                alt="Toggle Direct messages" 
+                className={classNames(open ? "transform rotate-90" : "", "h-4 w-4 mr-2")} 
+                style={{ color: themeColors?.foreground }} 
+            />
+            <h5 className="th-color-for">Direct messages</h5>
         </div>
-    );
+    </Disclosure.Button>
+);
+
+const DirectMessagesList = () => (
+    <Disclosure.Panel className="pt-3 pb-2 text-sm space-y-1">
+        {value?.map((doc: any) => <DirectMessage key={doc.objectId} dm={doc} />)}
+        <AddTeammates />
+    </Disclosure.Panel>
+);
+
+return (
+    <div>
+        <Disclosure defaultOpen>
+            {({ open }) => (
+                <>
+                    <DisclosureButton open={open} />
+                    <DirectMessagesList />
+                </>
+            )}
+        </Disclosure>
+        <AddTeammatesModal />
+    </div>
+);
+
 }

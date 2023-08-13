@@ -10,20 +10,36 @@ interface AuthGuardProps {
 export default function AuthGuard({ children }: AuthGuardProps) {
     const { user, isInitialized, isAuthenticated } = useAuth();
 
+    // Verbose checks for initialization and authentication
+    const isUserInitialized = isInitialized;
+    const isUserAuthenticated = isAuthenticated;
+
+    // Define local storage keys
+    const themeLocalStorageKey = "theme";
+    const backgroundColorLocalStorageKey = "backgroundColor";
+
+    // useEffect hook logic breakdown
     useEffect(() => {
-        if (isInitialized && !isAuthenticated) {
-            localStorage.removeItem("theme");
-            localStorage.removeItem("backgroundColor");
+        if (isUserInitialized && !isUserAuthenticated) {
+            localStorage.removeItem(themeLocalStorageKey);
+            localStorage.removeItem(backgroundColorLocalStorageKey);
         }
-    }, [user, isInitialized, isAuthenticated]);
+    }, [user, isUserInitialized, isUserAuthenticated]);
 
-    if (!isInitialized) {
-        return <LoadingScreen />;
+    // Check for user initialization
+    if (!isUserInitialized) {
+        const loadingScreenComponent = <LoadingScreen />;
+        return loadingScreenComponent;
     }
 
-    if (!isAuthenticated) {
-        return <Navigate to="/authentication/login" />;
+    // Check for user authentication
+    if (!isUserAuthenticated) {
+        const loginRoutePath = "/authentication/login";
+        const navigateToLoginComponent = <Navigate to={loginRoutePath} />;
+        return navigateToLoginComponent;
     }
 
-    return <>{children}</>;
+    // If user is authenticated, render the children components
+    const childrenComponents = <>{children}</>;
+    return childrenComponents;
 }

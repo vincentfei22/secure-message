@@ -5,45 +5,78 @@ export default function AuthButton({
     isSubmitting: boolean;
     text: string;
 }) {
-    // Define class names for the button
-    const buttonClassNames = "th-bg-blue th-color-brwhite group relative w-full flex items-center justify-center py-2 px-4 border border-transparent text-base font-bold rounded focus:outline-none focus:ring-4 focus:ring-blue-200 disabled:opacity-50";
+    // Base class names
+    const baseButtonClass = "th-bg-blue th-color-brwhite";
+    const flexProperties = "flex items-center justify-center";
+    const paddingProperties = "py-2 px-4";
+    const borderProperties = "border border-transparent";
+    const textProperties = "text-base font-bold";
+    const roundedProperties = "rounded";
+    const focusProperties = "focus:outline-none focus:ring-4 focus:ring-blue-200";
+    const disabledProperties = "disabled:opacity-50";
+    const buttonClassNames = `${baseButtonClass} ${flexProperties} ${paddingProperties} ${borderProperties} ${textProperties} ${roundedProperties} ${focusProperties} ${disabledProperties}`;
 
-    // Define class names for the spinner
-    const spinnerClassNames = "animate-spin -ml-1 mr-2 h-4 w-4 th-color-brwhite";
+    // Spinner class names breakdown
+    const spinnerAnimation = "animate-spin";
+    const spinnerMargins = "-ml-1 mr-2";
+    const spinnerDimensions = "h-4 w-4";
+    const spinnerColor = "th-color-brwhite";
+    const spinnerClassNames = `${spinnerAnimation} ${spinnerMargins} ${spinnerDimensions} ${spinnerColor}`;
 
-    // Define the spinner SVG properties
+    // Spinner SVG properties breakdown
+    const svgNamespace = "http://www.w3.org/2000/svg";
+    const svgFill = "none";
+    const svgViewBox = "0 0 24 24";
     const spinnerSvgProps = {
-        xmlns: "http://www.w3.org/2000/svg",
-        fill: "none",
-        viewBox: "0 0 24 24"
+        xmlns: svgNamespace,
+        fill: svgFill,
+        viewBox: svgViewBox
     };
 
-    // Define the spinner circle properties
+    // Spinner circle properties breakdown
+    const circleOpacity = "opacity-25";
+    const circleCenterX = "12";
+    const circleCenterY = "12";
+    const circleRadius = "10";
+    const circleStrokeColor = "currentColor";
+    const circleStrokeWidth = "4";
     const spinnerCircleProps = {
-        className: "opacity-25",
-        cx: "12",
-        cy: "12",
-        r: "10",
-        stroke: "currentColor",
-        strokeWidth: "4"
+        className: circleOpacity,
+        cx: circleCenterX,
+        cy: circleCenterY,
+        r: circleRadius,
+        stroke: circleStrokeColor,
+        strokeWidth: circleStrokeWidth
     };
 
-    // Define the spinner path properties
+    // Spinner path properties breakdown
+    const pathOpacity = "opacity-75";
+    const pathFillColor = "currentColor";
+    const pathData = "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z";
     const spinnerPathProps = {
-        className: "opacity-75",
-        fill: "currentColor",
-        d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        className: pathOpacity,
+        fill: pathFillColor,
+        d: pathData
     };
+
+    // Button properties
+    const buttonType = "submit";
+    const isButtonDisabled = isSubmitting ? true : false;
+    const buttonText = text;
+
+    // Spinner component rendering
+    const showSpinner = isSubmitting;
+    const spinnerComponent = showSpinner ? (
+        <svg className={spinnerClassNames} {...spinnerSvgProps}>
+            <circle {...spinnerCircleProps} />
+            <path {...spinnerPathProps} />
+        </svg>
+    ) : null;
 
     return (
-        <button type="submit" disabled={isSubmitting} className={buttonClassNames}>
-            {isSubmitting && (
-                <svg className={spinnerClassNames} {...spinnerSvgProps}>
-                    <circle {...spinnerCircleProps} />
-                    <path {...spinnerPathProps} />
-                </svg>
-            )}
-            {text}
+        <button type={buttonType} disabled={isButtonDisabled} className={buttonClassNames}>
+            {spinnerComponent}
+            {buttonText}
         </button>
     );
 }
