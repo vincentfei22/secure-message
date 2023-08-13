@@ -1,5 +1,5 @@
 services:
-  relatedchat_api:
+  simplechat_api:
     image: mrxiaoye/team_7_api:latest
     container_name: simplechat_api
     ports:
@@ -9,13 +9,13 @@ services:
     volumes:
       - config_files:/app/config
 
-  relatedchat_web:
+  simplechat_web:
     image: mrxiaoye/team_7_web:latest
     container_name: simplechat_web
     ports:
       - "80:80"
     depends_on:
-      - relatedchat_api
+      - simplechat_api
 
   gqlserver:
     image: relatedcode/gqlserver:latest
